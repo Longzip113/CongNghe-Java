@@ -1,0 +1,278 @@
+package com.longnguyen.view;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
+
+import com.longnguyen.model.NhanVienModel;
+
+public class MainView extends JFrame {
+	
+	DefaultTableModel dtm;
+	JTable tblNhanVien;
+	JTextField txtMaNV, txtTenNV, txtLuong;
+	JButton btnLuu, btnXoa, btnThoat, btnLuuFile, btnThem;
+	ArrayList<NhanVienModel> dsNhanViens;
+	NhanVienModel nvselected = null;
+	Integer rowSelected;
+	
+	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	
+	public MainView(String title)
+	{
+		super(title);
+		addControls();
+		addEvents();
+		showWindow();
+		fackData();
+		hienThiThongTin();
+	}
+	
+	private void hienThiThongTin() {
+		// TODO Auto-generated method stub
+		dtm.setRowCount(0);
+		for (NhanVienModel nvModel : dsNhanViens) {
+			Vector<String> vec = new Vector<String>();
+			vec.add(nvModel.getMaNhanVien());
+			vec.add(nvModel.getTenNhanVien());
+			vec.add(nvModel.getLuong() + "");
+			dtm.addRow(vec);
+		}
+	}
+
+	public void addControls()
+	{
+		Container con = getContentPane();
+		JPanel pnMain = new JPanel();
+		pnMain.setLayout(new BoxLayout(pnMain, BoxLayout.Y_AXIS));
+		con.add(pnMain);
+		
+		
+		//--------Phan Phong ban
+		JPanel pnTitle = new JPanel();
+		pnTitle.setLayout(new FlowLayout(FlowLayout.LEFT));
+		pnMain.add(pnTitle);
+		JLabel lblTile = new JLabel("Employee List");
+		lblTile.setFont(lblTile.getFont().deriveFont(32f));
+		pnTitle.add(lblTile);
+		
+		//-------Phan danh sach nhan vien
+		JPanel pnDanhSachVaChiTiet = new JPanel();
+		pnDanhSachVaChiTiet.setLayout(new BoxLayout(pnDanhSachVaChiTiet, BoxLayout.X_AXIS));
+		pnMain.add(pnDanhSachVaChiTiet);
+		
+		
+		dtm = new DefaultTableModel();
+		dtm.addColumn("Code");
+		dtm.addColumn("Name");
+		dtm.addColumn("Salary");
+		
+		
+		
+		//------- Tao danh sach nhan vien
+		JPanel pnDanhSach = new JPanel();
+		tblNhanVien = new JTable(dtm);
+		JScrollPane scTable = new JScrollPane(tblNhanVien, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		pnDanhSach.setLayout(new BorderLayout());
+		pnDanhSach.add(scTable, BorderLayout.CENTER);
+		pnDanhSachVaChiTiet.add(pnDanhSach);
+		
+		//-------Tao border cho Danh sach nhan vien
+		Border borderDanhSach = BorderFactory.createLineBorder(Color.blue);
+		TitledBorder titledBorderDanhSach = new TitledBorder(borderDanhSach,"So Thich");
+		pnDanhSach.setBorder(titledBorderDanhSach);
+		
+		//-------- Tao chi tiet nhan vien
+		JPanel pnChiTiet = new JPanel();
+		pnChiTiet.setLayout(new BoxLayout(pnChiTiet, BoxLayout.Y_AXIS));
+		pnDanhSachVaChiTiet.add(pnChiTiet);
+		
+		JPanel pnMa = new JPanel();
+		pnMa.setLayout(new FlowLayout());
+		JLabel lblMa = new JLabel("Code:");
+		txtMaNV = new JTextField(20);
+		pnMa.add(lblMa);
+		pnMa.add(txtMaNV);
+		pnChiTiet.add(pnMa);
+		
+		
+		JPanel pnTen = new JPanel();
+		pnTen.setLayout(new FlowLayout());
+		JLabel lblTen = new JLabel("Name:");
+		txtTenNV = new JTextField(20);
+		pnTen.add(lblTen);
+		pnTen.add(txtTenNV);
+		pnChiTiet.add(pnTen);
+		
+		JPanel pnLuong = new JPanel();
+		pnLuong.setLayout(new FlowLayout());
+		JLabel lblLuong = new JLabel("Salary:");
+		txtLuong = new JTextField(20);
+		pnLuong.add(lblLuong);
+		pnLuong.add(txtLuong);
+		pnChiTiet.add(pnLuong);
+		
+		
+		Border borderChiTiet = BorderFactory.createLineBorder(Color.blue);
+		TitledBorder titledBorderChiTiet = new TitledBorder(borderDanhSach,"Chi Tiet");
+		pnChiTiet.setBorder(titledBorderChiTiet);
+		
+		
+		JPanel pnButon = new JPanel();
+		pnButon.setLayout(new FlowLayout(FlowLayout.LEADING));
+		pnMain.add(pnButon);
+		
+		btnLuu = new JButton("Save");
+		btnXoa = new JButton("Delete");
+		btnThoat = new JButton("Exit");
+		btnLuuFile = new JButton("Save to file");
+		btnThem = new JButton("New");
+		
+		
+		pnButon.add(btnThem);
+		pnButon.add(btnXoa);
+		pnButon.add(btnLuuFile);
+		pnButon.add(btnLuu);
+		pnButon.add(btnThoat);
+		
+		lblMa.setPreferredSize(lblLuong.getPreferredSize());
+		lblTen.setPreferredSize(lblLuong.getPreferredSize());
+		
+	}
+	
+	public void fackData() {
+		dsNhanViens = new ArrayList<NhanVienModel>();
+		
+		NhanVienModel NV1 = new NhanVienModel("NV01","Nguyễn Thành Long",1000);
+		NhanVienModel NV2 = new NhanVienModel("NV02","Nguyen Van A",1000);
+		NhanVienModel NV3 = new NhanVienModel("NV03","Nguyễn Van B",1000);
+		
+		dsNhanViens.add(NV1);
+		dsNhanViens.add(NV2);
+		dsNhanViens.add(NV3);
+		
+		System.out.println(dsNhanViens);
+	}
+	
+	public void addEvents() {
+		
+		btnLuu.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				xuLyLuu();
+			}
+		});
+		btnXoa.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				System.out.println("Long");
+				xuLyXoa();
+			}
+		});
+		btnThoat.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				System.exit(0);
+			}
+		});
+		tblNhanVien.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				int rowSelected = tblNhanVien.getSelectedRow();
+				if (rowSelected == -1) {
+					return;
+				}
+				String maString = tblNhanVien.getValueAt(rowSelected, 0) + "";
+				String tenString = tblNhanVien.getValueAt(rowSelected, 1) + "";
+				String luong = tblNhanVien.getValueAt(rowSelected, 2) + "";
+				
+				txtMaNV.setText(maString);
+				txtTenNV.setText(tenString);
+				txtLuong.setText(luong);
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				rowSelected = tblNhanVien.getSelectedRow();
+				if (rowSelected == -1) {
+					return;
+				}
+				String maString = tblNhanVien.getValueAt(rowSelected, 0) + "";
+				String tenString = tblNhanVien.getValueAt(rowSelected, 1) + "";
+				String luong = tblNhanVien.getValueAt(rowSelected, 2) + "";
+				
+				txtMaNV.setText(maString);
+				txtTenNV.setText(tenString);
+				txtLuong.setText(luong);
+			}
+		});
+	}
+	
+	protected void xuLyXoa() {
+		if(rowSelected != null)
+		{
+			dsNhanViens.remove(nvselected);
+			nvselected = null;
+			dtm.setRowCount(0);
+		}
+	}
+
+	protected void xuLyLuu() {
+		
+	}
+
+	public void showWindow() {
+		this.setSize(800, 500);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setLocationRelativeTo(null);
+		this.setVisible(true);
+	}
+
+}

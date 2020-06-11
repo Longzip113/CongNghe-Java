@@ -1,0 +1,55 @@
+package com.longnguyen.model;
+
+public class DepartmentModel {
+	private String maKh;
+	private String tenKh;
+	private String sdtKh;
+	private NhomKhachHangModel nhom;
+	
+	
+	public DepartmentModel(String maKh, String tenKh, String sdtKh, String gmail) {
+		super();
+		this.maKh = maKh;
+		this.tenKh = tenKh;
+		this.sdtKh = sdtKh;
+	}
+	
+	public String getMaKh() {
+		return maKh;
+	}
+	public void setMaKh(String maKh) {
+		this.maKh = maKh;
+	}
+	public String getTenKh() {
+		return tenKh;
+	}
+	public void setTenKh(String tenKh) {
+		this.tenKh = tenKh;
+	}
+	public String getSdtKh() {
+		return sdtKh;
+	}
+	public void setSdtKh(String sdtKh) {
+		this.sdtKh = sdtKh;
+	}
+	public String getGmail() {
+		return gmail;
+	}
+	public void setGmail(String gmail) {
+		this.gmail = gmail;
+	}
+
+	public NhomKhachHangModel getNhom() {
+		return nhom;
+	}
+
+	public void setNhom(NhomKhachHangModel nhom) {
+		this.nhom = nhom;
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return this.tenKh;
+	}
+}

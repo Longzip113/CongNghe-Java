@@ -1,0 +1,356 @@
+package com.longnguyen.view;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+
+import com.longnguyen.model.DepartmentModel;
+import com.longnguyen.model.EmployeeModel;
+
+public final class MainView extends JFrame {
+
+	private static final long serialVersionUID = -2677719032991036030L;
+
+	DefaultMutableTreeNode root = null;
+	DefaultTreeModel treeModel = null;
+	JTree tree;
+	JTextField txtCodeEmp, txtNameEmp, txtSalaryEmp, txtCode, txtName;
+
+	JButton btnSaveEmp, btnDeleteEmp, btnNewEmp, btnSaveToFile, btnSave, btnDelete, btnNew, btnSavaToFile;
+	
+	
+	
+	ArrayList<EmployeeModel> dsKH;
+	ArrayList<DepartmentModel> dsNhom;
+
+	DepartmentModel nhomSelected = null;
+	EmployeeModel employeeModel = null;
+	DefaultMutableTreeNode nodeNhom;
+	DefaultMutableTreeNode nodeKH;
+
+	String fileName = "/Users/longnguyen/Desktop/HUFI [Bài Tập]/Công nghệ java/Bai Tap Swing/Bai2.9/data/data.txt";
+
+	public MainView(String title) {
+		super(title);
+		addControls();
+		addEvents();
+		fakedata();
+		loadData();
+	}
+
+	private void addEvents() {
+		tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+			@Override
+			public void valueChanged(TreeSelectionEvent e) {
+				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				if (selectedNode != null && selectedNode.getLevel() == 1) {
+					nhomSelected = (DepartmentModel) selectedNode.getUserObject();
+					hienThiVanPhong();
+				}
+				if (selectedNode != null && selectedNode.getLevel() == 2) {
+					employeeModel = (EmployeeModel) selectedNode.getUserObject();
+					hienThiDanhSachKhachHangTheoNhom();
+				}
+			}
+		});
+
+		btnSaveEmp.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				if (txtCode.getText().isEmpty()) {
+					return;
+				}
+				EmployeeModel NV = new EmployeeModel(txtCodeEmp.getText(), txtNameEmp.getText(),
+						Integer.parseInt(txtSalaryEmp.getText()), employeeModel.getPB());
+				TreePath parentPath = tree.getSelectionPath();
+				nodeNhom = (DefaultMutableTreeNode) (parentPath.getLastPathComponent());
+				System.out.println(parentPath);
+				DefaultMutableTreeNode nodeKH = new DefaultMutableTreeNode(NV);
+				nodeNhom.add(nodeKH);
+				treeModel.reload();
+
+			}
+		});
+		
+		btnSave.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				if (txtCode.getText().isEmpty()) {
+					return;
+				}
+				DepartmentModel VP = new DepartmentModel(txtCode.getText(), txtName.getText());
+				nodeNhom = new DefaultMutableTreeNode(VP);
+				root.add(nodeNhom);
+				treeModel.reload();
+
+			}
+		});
+
+
+		btnDelete.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ae) {
+				if (txtCode.getText().isEmpty()) {
+					return;
+				}
+				int req = JOptionPane.showConfirmDialog(tree, "Ban co muon xoa khong");
+				if (req == JOptionPane.OK_OPTION) {
+					DefaultMutableTreeNode selectedNode1 = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+					root.remove(selectedNode1);
+					treeModel.reload();
+				}
+
+			}
+		});
+		
+		btnDeleteEmp.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ae) {
+				if (txtCode.getText().isEmpty()) {
+					return;
+				}
+				int req = JOptionPane.showConfirmDialog(tree, "Ban co muon xoa khong");
+				if (req == JOptionPane.OK_OPTION) {
+					DefaultMutableTreeNode selectedNode1 = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+					nodeNhom.remove(selectedNode1);
+					treeModel.reload();
+				}
+
+			}
+		});
+
+		btnNewEmp.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				txtCodeEmp.setText("");
+				txtCodeEmp.requestFocus();
+				txtNameEmp.setText("");
+				txtSalaryEmp.setText("");
+			}
+		});
+
+		btnNew.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				txtCode.setText("");
+				txtCode.requestFocus();
+				txtName.setText("");
+				txtCodeEmp.setText("");
+				txtNameEmp.setText("");
+				txtSalaryEmp.setText("");
+			}
+		});
+
+	}
+
+	protected void hienThiVanPhong() {
+		// TODO Auto-generated method stub
+		txtCode.setText(nhomSelected.getMaPB());
+		txtName.setText(nhomSelected.getTenPB());
+
+		txtCodeEmp.setText("");
+		txtNameEmp.setText("");
+		txtSalaryEmp.setText("");
+	}
+
+	protected void hienThiDanhSachKhachHangTheoNhom() {
+
+		txtCode.setText(employeeModel.getPB().getMaPB());
+		txtName.setText(employeeModel.getPB().getTenPB());
+
+		txtCodeEmp.setText(employeeModel.getMaNV());
+		txtNameEmp.setText(employeeModel.getTenNV());
+		txtSalaryEmp.setText(employeeModel.getLuongNV() + "");
+
+	}
+
+	private void addControls() {
+		Container con = getContentPane();
+
+		JPanel pnLeft = new JPanel();
+		pnLeft.setLayout(new BoxLayout(pnLeft, BoxLayout.Y_AXIS));
+		JPanel pnTree = new JPanel();
+		pnLeft.add(pnTree);
+		root = new DefaultMutableTreeNode("Departments");
+		treeModel = new DefaultTreeModel(root);
+		tree = new JTree(treeModel);
+
+		JScrollPane sc = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		sc.setPreferredSize(new Dimension(250, 500));
+		pnTree.add(sc, BorderLayout.CENTER);
+		
+		btnSavaToFile = new JButton("Save To File");
+		JPanel pnBtnSaveToFile = new JPanel();
+		pnBtnSaveToFile.add(btnSavaToFile);
+		pnBtnSaveToFile.setPreferredSize(new Dimension(50,50));
+		pnLeft.add(pnBtnSaveToFile);
+		
+
+		con.setLayout(new BorderLayout());
+		pnTree.setPreferredSize(new Dimension(250, 600));
+
+		JPanel pnRight = new JPanel();
+		pnRight.setLayout(new BorderLayout());
+		pnRight.setPreferredSize(new Dimension(0, 300));
+		JSplitPane sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, pnLeft, pnRight);
+		sp.setOneTouchExpandable(true);
+
+		JPanel pnRightTop = new JPanel();
+
+		JPanel pnRightBottom = new JPanel();
+		pnRightTop.setPreferredSize(new Dimension(0, 400));
+		JSplitPane spR = new JSplitPane(JSplitPane.VERTICAL_SPLIT, pnRightTop, pnRightBottom);
+		pnRight.add(spR, BorderLayout.CENTER);
+
+		con.add(sp, BorderLayout.CENTER);
+
+		JPanel pnCode = new JPanel();
+		JLabel lblCode = new JLabel("Emp. code: ");
+		txtCode = new JTextField(25);
+		pnCode.add(lblCode);
+		pnCode.add(txtCode);
+		pnRightTop.add(pnCode);
+
+		JPanel pnName = new JPanel();
+		JLabel lblName = new JLabel("Emp. name: ");
+		txtName = new JTextField(25);
+		pnName.add(lblName);
+		pnName.add(txtName);
+		pnRightTop.add(pnName);
+
+		JPanel pnButtonTop = new JPanel();
+		pnButtonTop.setLayout(new FlowLayout());
+		btnSave = new JButton("Save");
+		btnDelete = new JButton("Remove");
+		btnNew = new JButton("New");
+		pnButtonTop.add(btnSave);
+		pnButtonTop.add(btnDelete);
+		pnButtonTop.add(btnNew);
+		pnRightTop.add(pnButtonTop);
+
+		Border borderRightTop = BorderFactory.createLineBorder(Color.blue);
+		TitledBorder titledBorderRightTop = new TitledBorder(borderRightTop, "Department Details");
+		pnRightTop.setBorder(titledBorderRightTop);
+
+		JPanel pnCodeEmp = new JPanel();
+		JLabel lblCodeEmp = new JLabel("Emp. code: ");
+		txtCodeEmp = new JTextField(25);
+		pnCodeEmp.add(lblCodeEmp);
+		pnCodeEmp.add(txtCodeEmp);
+		pnRightBottom.add(pnCodeEmp);
+
+		JPanel pnNameEmp = new JPanel();
+		JLabel lblNameEmp = new JLabel("Emp. name: ");
+		txtNameEmp = new JTextField(25);
+		pnNameEmp.add(lblNameEmp);
+		pnNameEmp.add(txtNameEmp);
+		pnRightBottom.add(pnNameEmp);
+
+		JPanel pnSalary = new JPanel();
+		JLabel lblSalary = new JLabel("Salary: ");
+		txtSalaryEmp = new JTextField(25);
+		pnSalary.add(lblSalary);
+		pnSalary.add(txtSalaryEmp);
+		pnRightBottom.add(pnSalary);
+
+		JPanel pnButtonBottom = new JPanel();
+		pnButtonBottom.setLayout(new FlowLayout());
+		btnSaveEmp = new JButton("Save");
+		btnDeleteEmp = new JButton("Remove");
+		btnNewEmp = new JButton("New");
+		pnButtonBottom.add(btnSaveEmp);
+		pnButtonBottom.add(btnDeleteEmp);
+		pnButtonBottom.add(btnNewEmp);
+		pnRightBottom.add(pnButtonBottom);
+
+		Border borderRightButtom = BorderFactory.createLineBorder(Color.blue);
+		TitledBorder titledBorderRightButtom = new TitledBorder(borderRightButtom, "Employee Details");
+		pnRightBottom.setBorder(titledBorderRightButtom);
+
+		// Chinh sua
+		txtNameEmp.setPreferredSize(txtSalaryEmp.getPreferredSize());
+		txtCodeEmp.setPreferredSize(txtSalaryEmp.getPreferredSize());
+
+		lblSalary.setPreferredSize(lblNameEmp.getPreferredSize());
+		lblCodeEmp.setPreferredSize(lblNameEmp.getPreferredSize());
+
+	}
+
+	public void fakedata() {
+		String S = "";
+		StringTokenizer skt;
+		dsNhom = new ArrayList<DepartmentModel>();
+		DepartmentModel VIP = null;
+		try {
+			FileReader file = new FileReader(fileName);
+			BufferedReader bf = new BufferedReader(file);
+			while ((S = bf.readLine()) != null) {
+				S = S.trim();
+				Boolean isdept = (S.charAt(S.length() - 1) == ':');
+				skt = new StringTokenizer(S, "-:,");
+				String code = skt.nextToken().trim();
+				String name = skt.nextToken().trim();
+				if (isdept) {
+					VIP = new DepartmentModel(code, name);
+					dsNhom.add(VIP);
+				} else {
+					int salary = Integer.parseInt(skt.nextToken().trim());
+					VIP.themKhachHang(new EmployeeModel(code, name, salary));
+				}
+			}
+			bf.close();
+			file.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void loadData() {
+		for (DepartmentModel nhomKhachHangModel : dsNhom) {
+			nodeNhom = new DefaultMutableTreeNode(nhomKhachHangModel);
+			root.add(nodeNhom);
+			for (EmployeeModel khachHangModel : nhomKhachHangModel.getNhanVien()) {
+				DefaultMutableTreeNode nodeKH = new DefaultMutableTreeNode(khachHangModel);
+				nodeNhom.add(nodeKH);
+			}
+		}
+
+		tree.expandRow(0);
+	}
+
+	public void showWindow() {
+		this.setSize(500, 500);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setLocationRelativeTo(null);
+		this.setVisible(true);
+	}
+}

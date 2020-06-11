@@ -1,0 +1,24 @@
+package com.longnguyen.model;
+
+public class EmployeeModel {
+	private String maNV;
+	private String tenNV;
+	private String luongNV;
+	private DepartmentModel PB;
+	
+	
+	public EmployeeModel(String maKh, String tenKh, String sdtKh, String gmail) {
+		super();
+		this.maKh = maKh;
+		this.tenKh = tenKh;
+		this.sdtKh = sdtKh;
+	}
+	
+	
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return this.tenNV;
+	}
+}
