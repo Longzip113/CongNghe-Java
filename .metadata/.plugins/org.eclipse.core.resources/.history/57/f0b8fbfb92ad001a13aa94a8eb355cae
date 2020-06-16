@@ -179,7 +179,7 @@ public class MainView extends JFrame {
 		pDieuHanh.themNhanVien(new NhanVienModel("Nguyen Thanh Cao","NV1",new Date(2020-1900,12,1), new Date(1999-1900,5,25)));
 		pMarkerting.themNhanVien(new NhanVienModel("Tran Van E","NV4",new Date(2015-1900,15,1), new Date(1999-1900,5,25)));
 		pKeToan.themNhanVien(new NhanVienModel("Nguyen Van H","NV1",new Date(2020-1900,12,1), new Date(1999-1900,5,25)));
-		pKeToan.themNhanVien(new NhanVienModel("Nguyen Thanh G","NV1",new Date(2020,12,1), new Date(1999-1900,5,25)));
+		pKeToan.themNhanVien(new NhanVienModel("Nguyen Thanh G","NV1",new Date(2020-1900,12,1), new Date(1999-1900,5,25)));
 		
 		
 		

@@ -54,4 +54,5 @@
     <fullyQualifiedTypeName name="javax.swing.tree.DefaultMutableTreeNode"/>
     <fullyQualifiedTypeName name="com.longnguyen.model.EmployeeModel"/>
     <fullyQualifiedTypeName name="javax.swing.JOptionPane"/>
+    <fullyQualifiedTypeName name="java.util.Date"/>
 </qualifiedTypeNameHistroy>
